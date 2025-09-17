@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portafolio - Andrés A. Socorro</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #00ffcc;
+            --color-secondary: #000;
+        }
+
+        body {
+            background-color: var(--color-secondary);
+            color: white;
+            font-family: 'Arial', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* Animación de entrada */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .project-card {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--color-primary);
+            transition: transform 0.3s ease;
+            animation: slideIn 1s ease forwards;
+        }
+
+        .project-card:hover {
+            transform: scale(1.05);
+        }
+
+        .project-image {
+            height: 250px;
+            object-fit: cover;
+            filter: grayscale(70%);
+            transition: filter 0.3s ease;
+        }
+
+        .project-card:hover .project-image {
+            filter: grayscale(0);
+        }
+
+        .tech-badge {
+            background-color: var(--color-primary);
+            color: var(--color-secondary);
+            margin-right: 5px;
+        }
+
+        /* Animación de fondo */
+        #background-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: linear-gradient(45deg, #000, #111, #222);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% {background-position: 0% 50%;}
+            50% {background-position: 100% 50%;}
+            100% {background-position: 0% 50%;}
+        }
+    </style>
+</head>
+<body>
+    <div id="background-animation"></div>
+    
+    <div class="container py-5">
+        <div class="text-center mb-5">
+            <h1 class="display-4" style="color: var(--color-primary);">Portafolio de Proyectos</h1>
+            <p class="lead">Andrés A. Socorro - Desarrollador de Software</p>
+        </div>
+
+        <div class="row g-4">
+            <!-- Proyecto 1 -->
+            <div class="col-md-4">
+                <div class="project-card p-3 rounded">
+                    <img src="pagina-web-personal.jpg" class="project-image w-100 rounded mb-3" alt="Página Web Personal">
+                    <h3>Página Web Personal</h3>
+                    <p>Sitio web personal completamente responsivo con diseño moderno, animaciones y sección de portafolio interactiva.</p>
+                    <div class="d-flex mb-3">
+                        <span class="badge tech-badge">HTML5</span>
+                        <span class="badge tech-badge">CSS3</span>
+                        <span class="badge tech-badge">JavaScript</span>
+                        <span class="badge tech-badge">Responsive Design</span>
+                    </div>
+                    <a href="index.html" class="btn btn-outline-light">Ver Detalles</a>
+                </div>
+            </div>
+
+            <!-- Proyecto 2 -->
+            <div class="col-md-4">
+                <div class="project-card p-3 rounded">
+                    <img src="juego-snake.jpg" class="project-image w-100 rounded mb-3" alt="Juego Snake">
+                    <h3>Creación de Juegos Simples</h3>
+                    <p>Desarrollo de juego clásico Snake utilizando HTML5, CSS3 y JavaScript. Implementación de mecánicas de juego básicas.</p>
+                    <div class="d-flex mb-3">
+                        <span class="badge tech-badge">HTML5</span>
+                        <span class="badge tech-badge">CSS3</span>
+                        <span class="badge tech-badge">JavaScript</span>
+                        <span class="badge tech-badge">Juegos Web</span>
+                    </div>
+                    <a href="juego-snake.html" class="btn btn-outline-light">Ver Detalles</a>
+                </div>
+            </div>
+
+            <!-- Proyecto 3 -->
+            <div class="col-md-4">
+                <div class="project-card p-3 rounded">
+                    <img src="bot-telegram.jpg" class="project-image w-100 rounded mb-3" alt="Bot de Telegram">
+                    <h3>Bot de Automatización en Telegram</h3>
+                    <p>Bot de Telegram desarrollado en Python para automatizar tareas, enviar notificaciones y realizar consultas personalizadas.</p>
+                    <div class="d-flex mb-3">
+                        <span class="badge tech-badge">Python</span>
+                        <span class="badge tech-badge">Telegram API</span>
+                        <span class="badge tech-badge">Automatización</span>
+                        <span class="badge tech-badge">Bots</span>
+                    </div>
+                    <a href="#" class="btn btn-outline-light">Ver Detalles</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer class="text-center py-4">
+        <p>&copy; 2025 Andrés A. Socorro | Todos los derechos reservados</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Botón para regresar a la página anterior
+        const backBtn = document.createElement('button');
+        backBtn.textContent = 'Regresar';
+        backBtn.className = 'btn btn-primary position-fixed';
+        backBtn.style.bottom = '30px';
+        backBtn.style.right = '30px';
+        backBtn.style.zIndex = '1000';
+        backBtn.onclick = () => window.history.back();
+        document.body.appendChild(backBtn);
+    </script>
+</body>
+</html>

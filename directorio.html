@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackMesa - Directorio de Restaurantes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                BlackMesa Directorio
+            </div>
+            <nav class="nav-buttons">
+                <button class="btn btn-primary" id="addRestaurantBtn" onclick="openAddModal()">
+                    <i class="fas fa-plus"></i> Agregar Restaurante
+                </button>
+                <button class="btn btn-secondary" onclick="showReports()">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </button>
+                <button class="btn btn-secondary" onclick="clearSearch()">
+                    <i class="fas fa-refresh"></i> Limpiar
+                </button>
+                
+                <!-- User Menu -->
+                <div class="user-menu">
+                    <button class="user-button" onclick="toggleUserMenu()">
+                        <i class="fas fa-user"></i>
+                        <span id="userRoleText">Invitado</span>
+                        <span id="userRoleBadge" class="role-badge role-guest">Invitado</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </button>
+                    
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="dropdown-item" onclick="openLoginModal()">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Cambiar Rol
+                        </div>
+                        <div class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Cerrar Sesión
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Directory View -->
+    <div id="directoryView">
+        <!-- Carousel Section -->
+        <section class="carousel-section">
+            <div class="carousel-container">
+                <div class="carousel-track" id="carouselTrack">
+                    <div class="carousel-slide">
+                        <div class="slide-content">
+                            <h2>🍽️ Directorio BlackMesa</h2>
+                            <p>Descubre los mejores restaurantes de tu ciudad. Reserva mesa y disfruta de experiencias gastronómicas únicas.</p>
+                            <button class="btn btn-primary" onclick="scrollToRestaurants()">
+                                <i class="fas fa-arrow-down"></i> Ver Restaurantes
+                            </button>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="slide-content">
+                            <h2>🍕 Comida Rápida</h2>
+                            <p>Para esos momentos cuando necesitas algo delicioso y rápido. Encuentra las mejores opciones de comida rápida.</p>
+                            <button class="btn btn-primary" onclick="filterByCategory('Comida Rápida')">
+                                <i class="fas fa-search"></i> Ver Opciones
+                            </button>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="slide-content">
+                            <h2>🥘 Comida Gourmet</h2>
+                            <p>Experiencias culinarias extraordinarias te esperan. Descubre restaurantes de alta cocina y sabores únicos.</p>
+                            <button class="btn btn-primary" onclick="filterByCategory('Gourmet')">
+                                <i class="fas fa-crown"></i> Explorar Gourmet
+                            </button>
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="slide-content">
+                            <h2>☕ Cafeterías</h2>
+                            <p>El lugar perfecto para relajarte con un buen café. Encuentra las mejores cafeterías y pastelerías.</p>
+                            <button class="btn btn-primary" onclick="filterByCategory('Cafetería')">
+                                <i class="fas fa-coffee"></i> Ver Cafeterías
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="carousel-nav prev" onclick="prevSlide()">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="carousel-nav next" onclick="nextSlide()">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+                
+                <div class="carousel-controls">
+                    <div class="control-dot active" onclick="goToSlide(0)"></div>
+                    <div class="control-dot" onclick="goToSlide(1)"></div>
+                    <div class="control-dot" onclick="goToSlide(2)"></div>
+                    <div class="control-dot" onclick="goToSlide(3)"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search Section -->
+        <section class="search-section" id="restaurantsSection">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: #dde0e9;">
+                <i class="fas fa-search"></i> Buscar Restaurantes
+            </h2>
+            <div class="search-container">
+                <input type="text" id="searchInput" class="search-input" placeholder="Buscar por nombre, categoría o descripción..." oninput="searchRestaurants()">
+                <button class="btn btn-secondary" onclick="clearSearch()">
+                    <i class="fas fa-times"></i> Limpiar
+                </button>
+            </div>
+            
+            <div class="restaurants-grid" id="restaurantsGrid">
+                <!-- Los restaurantes se cargarán aquí dinámicamente -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Restaurant Detail Page -->
+    <div id="restaurantPage" class="restaurant-page">
+        <div class="restaurant-header">
+            <button class="btn btn-secondary" onclick="goBackToDirectory()" style="position:sticky; top: 2rem; left: 2rem;">
+                <i class="fas fa-arrow-left"></i> Volver al Directorio
+            </button>
+            <h1 id="restaurantPageTitle">Nombre del Restaurante</h1>
+            <p id="restaurantPageDescription">Descripción del restaurante</p>
+            <div style="margin-top: 1rem;">
+                <span id="restaurantPageCategory" class="restaurant-category"></span>
+            </div>
+        </div>
+        
+        <div class="reservation-section">
+            <h2 style="text-align: center; color: #dde0e9; margin-bottom: 2rem;">
+                <i class="fas fa-calendar-check"></i> Hacer una Reserva
+            </h2>
+            
+            <div class="reservation-form">
+                <form id="reservationForm" onsubmit="makeReservation(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="customerName">Nombre Completo</label>
+                            <input type="text" id="customerName" name="customerName" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Teléfono</label>
+                            <input type="tel" id="customerPhone" name="customerPhone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="customerEmail">Correo Electrónico</label>
+                        <input type="email" id="customerEmail" name="customerEmail" required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reservationDate">Fecha de Reserva</label>
+                            <input type="date" id="reservationDate" name="reservationDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="guestCount">Número de Personas</label>
+                            <select id="guestCount" name="guestCount" required>
+                                <option value="">Seleccionar</option>
+                                <option value="1">1 persona</option>
+                                <option value="2">2 personas</option>
+                                <option value="3">3 personas</option>
+                                <option value="4">4 personas</option>
+                                <option value="5">5 personas</option>
+                                <option value="6">6 personas</option>
+                                <option value="7">7 personas</option>
+                                <option value="8">8 personas</option>
+                                <option value="8+">Más de 8 personas</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Horario Preferido</label>
+                        <div class="time-slots">
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="12:00">12:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="12:30">12:30 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="13:00">1:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="13:30">1:30 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="14:00">2:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="14:30">2:30 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="19:00">7:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="19:30">7:30 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="20:00">8:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="20:30">8:30 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="21:00">9:00 PM</div>
+                            <div class="time-slot" onclick="selectTimeSlot(this)" data-time="21:30">9:30 PM</div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="specialRequests">Peticiones Especiales (Opcional)</label>
+                        <textarea id="specialRequests" name="specialRequests" rows="3" placeholder="Alergias, celebraciones especiales, ubicación preferida, etc."></textarea>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-cancel" onclick="goBackToDirectory()">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-calendar-check"></i> Confirmar Reserva
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal login-modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-user"></i> Seleccionar Rol</h2>
+            
+            <div class="role-option" data-role="guest" onclick="selectRole('guest')">
+                <div class="role-icon">
+                    <i class="fas fa-eye"></i>
+                </div>
+                <div class="role-info">
+                    <h4>Invitado</h4>
+                    <p>Solo visualización, sin funciones</p>
+                </div>
+            </div>
+
+            <div class="role-option" data-role="customer" onclick="selectRole('customer')">
+                <div class="role-icon">
+                    <i class="fas fa-utensils"></i>
+                </div>
+                <div class="role-info">
+                    <h4>Comensal</h4>
+                    <p>Buscar y visitar restaurantes</p>
+                </div>
+            </div>
+
+            <div class="role-option" data-role="owner" onclick="selectRole('owner')">
+                <div class="role-icon">
+                    <i class="fas fa-store"></i>
+                </div>
+                <div class="role-info">
+                    <h4>Dueño de Restaurante</h4>
+                    <p>Gestionar hasta 5 restaurantes</p>
+                </div>
+            </div>
+
+            <div class="role-option" data-role="admin" onclick="selectRole('admin')">
+                <div class="role-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                <div class="role-info">
+                    <h4>Administrador</h4>
+                    <p>Control total del sistema</p>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="button" class="btn btn-cancel" onclick="closeLoginModal()">
+                    <i class="fas fa-times"></i> Cancelar
+                </button>
+                <button type="button" class="btn btn-primary" onclick="confirmRole()">
+                    <i class="fas fa-check"></i> Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Restaurant Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h2><i class="fas fa-plus"></i> Agregar Restaurante</h2>
+            <form id="restaurantForm" onsubmit="addRestaurant(event)">
+                <div class="form-group">
+                    <label for="name">Nombre del Restaurante</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Categoría</label>
+                    <select id="category" name="category" required>
+                        <option value="">Seleccionar categoría</option>
+                        <option value="Comida Tradicional">Comida Tradicional</option>
+                        <option value="Comida Rápida">Comida Rápida</option>
+                        <option value="Gourmet">Gourmet</option>
+                        <option value="Parrilla">Parrilla</option>
+                        <option value="Mariscos">Mariscos</option>
+                        <option value="Cafetería">Cafetería</option>
+                        <option value="Postres">Postres</option>
+                        <option value="Vegetariano">Vegetariano</option>
+                        <option value="Pizza">Pizza</option>
+                        <option value="Comida Internacional">Comida Internacional</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Descripción</label>
+                    <textarea id="description" name="description" rows="3" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Teléfono</label>
+                    <input type="tel" id="phone" name="phone" placeholder="+58412XXXXXXX">
+                </div>
+                
+                <div class="form-group">
+                    <label for="address">Dirección</label>
+                    <input type="text" id="address" name="address" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imageUpload">Imagen del Restaurante</label>
+                    <input type="file" id="imageUpload" name="imageUpload" accept="image/*">
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn btn-cancel" onclick="closeAddModal()">
+                        <i class="fas fa-times"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="contenedorfooter">
+            <p class="footer-text">
+                &copy; 2023 Directorio de Restaurantes. Todos los derechos reservados.
+            </p>
+            <div class="social-icons">
+                <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+            </div>
+            <p class="footer-text">
+                Desarrollado por <a href="https://www.linkedin.com/in/black-mesa-a5283a384/" target="_blank">BlackMesa</a>
+            </p>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+</html>

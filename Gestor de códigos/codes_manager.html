@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BlackMesa - Gestor de Códigos</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1b2838 0%, #2c3e50 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #c0c3d1, #dfd1ec);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: #94a3b8;
+            font-size: 1.1rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .card {
+            background: rgba(30, 41, 59, 0.8);
+            border-radius: 16px;
+            padding: 2rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            backdrop-filter: blur(10px);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            color: #c5c6c7;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-input, .form-select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 8px;
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 100%;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            width: 100%;
+            margin-top: 0.5rem;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .codes-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .codes-table th,
+        .codes-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(102, 126, 234, 0.2);
+        }
+
+        .codes-table th {
+            background: rgba(102, 126, 234, 0.2);
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .codes-table td {
+            color: #c5c6c7;
+        }
+
+        .status-active {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .status-used {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        .action-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            padding: 0.4rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+            transform: none;
+            box-shadow: none;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateX(100%);
+            transition: all 0.4s ease;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: #10b981;
+        }
+
+        .notification.error {
+            background: #ef4444;
+        }
+
+        .back-btn {
+            background: rgba(100, 116, 139, 0.2);
+            color: #64748b;
+            border: 1px solid rgba(100, 116, 139, 0.3);
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(100, 116, 139, 0.3);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .codes-table {
+                font-size: 0.8rem;
+            }
+
+            .codes-table th,
+            .codes-table td {
+                padding: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="Login.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Volver al Login
+        </a>
+
+        <div class="header">
+            <h1>
+                <i class="fas fa-key"></i>
+                Gestor de Códigos de Verificación
+            </h1>
+            <p>Panel de administración para códigos de propietarios y administradores</p>
+        </div>
+
+        <!-- Estadísticas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalOwnerCodes">0</div>
+                <div class="stat-label">Códigos Propietario</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalAdminCodes">0</div>
+                <div class="stat-label">Códigos Administrador</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="usedCodes">0</div>
+                <div class="stat-label">Códigos Usados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeCodes">0</div>
+                <div class="stat-label">Códigos Activos</div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Panel de Códigos para Propietarios -->
+            <div class="card">
+                <h2>
+                    <i class="fas fa-store"></i>
+                    Códigos para Propietarios
+                </h2>
+
+                <form id="ownerCodeForm">
+                    <div class="form-group">
+                        <label for="ownerCodeInput">Generar Código (6 dígitos)</label>
+                        <input type="text" id="ownerCodeInput" class="form-input" placeholder="123456" maxlength="6" pattern="[0-9]{6}">
+                    </div>
+                    <div class="form-group">
+                        <label for="ownerCodeDescription">Descripción</label>
+                        <input type="text" id="ownerCodeDescription" class="form-input" placeholder="Para [Nombre del solicitante]">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Generar Código
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="clearOwnerCodes()">
+                        <i class="fas fa-trash"></i> Limpiar Todos
+                    </button>
+                </form>
+
+                <table class="codes-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Estado</th>
+                            <th>Descripción</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ownerCodesTable">
+                        <!-- Los códigos se cargarán aquí -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Panel de Códigos para Administradores -->
+            <div class="card">
+                <h2>
+                    <i class="fas fa-user-shield"></i>
+                    Códigos para Administradores
+                </h2>
+
+                <form id="adminCodeForm">
+                    <div class="form-group">
+                        <label for="adminCodeInput">Generar Código (6 dígitos)</label>
+                        <input type="text" id="adminCodeInput" class="form-input" placeholder="123456" maxlength="6" pattern="[0-9]{6}">
+                    </div>
+                    <div class="form-group">
+                        <label for="adminCodeDescription">Descripción</label>
+                        <input type="text" id="adminCodeDescription" class="form-input" placeholder="Para [Nombre del solicitante]">
+                    </div>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Generar Código
+                    </button>
+                    <button type="button" class="btn btn-danger" onclick="clearAdminCodes()">
+                        <i class="fas fa-trash"></i> Limpiar Todos
+                    </button>
+                </form>
+
+                <table class="codes-table">
+                    <thead>
+                        <tr>
+                            <th>Código</th>
+                            <th>Estado</th>
+                            <th>Descripción</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adminCodesTable">
+                        <!-- Los códigos se cargarán aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Almacenamiento de códigos
+        let ownerCodes = JSON.parse(localStorage.getItem('blackmesa_owner_codes') || '[]');
+        let adminCodes = JSON.parse(localStorage.getItem('blackmesa_admin_codes') || '[]');
+
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCodes();
+            updateStats();
+            
+            // Event listeners
+            document.getElementById('ownerCodeForm').addEventListener('submit', addOwnerCode);
+            document.getElementById('adminCodeForm').addEventListener('submit', addAdminCode);
+            
+            // Auto-generar números al hacer foco
+            document.getElementById('ownerCodeInput').addEventListener('focus', function() {
+                if (!this.value) {
+                    this.value = generateRandomCode();
+                }
+            });
+            
+            document.getElementById('adminCodeInput').addEventListener('focus', function() {
+                if (!this.value) {
+                    this.value = generateRandomCode();
+                }
+            });
+        });
+
+        // Generar código aleatorio de 6 dígitos
+        function generateRandomCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        // Validar código de 6 dígitos
+        function validateCode(code) {
+            return /^[0-9]{6}$/.test(code);
+        }
+
+        // Añadir código de propietario
+        function addOwnerCode(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('ownerCodeInput').value.trim();
+            const description = document.getElementById('ownerCodeDescription').value.trim();
+            
+            if (!validateCode(code)) {
+                showNotification('El código debe tener exactamente 6 dígitos', 'error');
+                return;
+            }
+            
+            if (ownerCodes.find(c => c.code === code) || adminCodes.find(c => c.code === code)) {
+                showNotification('Este código ya existe', 'error');
+                return;
+            }
+            
+            const newCode = {
+                code: code,
+                description: description || 'Sin descripción',
+                status: 'active',
+                created: new Date().toISOString(),
+                used: null
+            };
+            
+            ownerCodes.push(newCode);
+            saveCodes();
+            loadCodes();
+            updateStats();
+            
+            // Limpiar formulario
+            document.getElementById('ownerCodeForm').reset();
+            
+            showNotification(`Código ${code} generado para propietarios`, 'success');
+        }
+
+        // Añadir código de administrador
+        function addAdminCode(e) {
+            e.preventDefault();
+            
+            const code = document.getElementById('adminCodeInput').value.trim();
+            const description = document.getElementById('adminCodeDescription').value.trim();
+            
+            if (!validateCode(code)) {
+                showNotification('El código debe tener exactamente 6 dígitos', 'error');
+                return;
+            }
+            
+            if (ownerCodes.find(c => c.code === code) || adminCodes.find(c => c.code === code)) {
+                showNotification('Este código ya existe', 'error');
+                return;
+            }
+            
+            const newCode = {
+                code: code,
+                description: description || 'Sin descripción',
+                status: 'active',
+                created: new Date().toISOString(),
+                used: null
+            };
+            
+            adminCodes.push(newCode);
+            saveCodes();
+            loadCodes();
+            updateStats();
+            
+            // Limpiar formulario
+            document.getElementById('adminCodeForm').reset();
+            
+            showNotification(`Código ${code} generado para administradores`, 'success');
+        }
+
+        // Guardar códigos en localStorage
+        function saveCodes() {
+            localStorage.setItem('blackmesa_owner_codes', JSON.stringify(ownerCodes));
+            localStorage.setItem('blackmesa_admin_codes', JSON.stringify(adminCodes));
+        }
+
+        // Cargar códigos y mostrar en tablas
+        function loadCodes() {
+            loadOwnerCodes();
+            loadAdminCodes();
+        }
+
+        function loadOwnerCodes() {
+            const tbody = document.getElementById('ownerCodesTable');
+            
+            if (ownerCodes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No hay códigos generados</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = ownerCodes.map(code => `
+                <tr>
+                    <td><strong>${code.code}</strong></td>
+                    <td><span class="status-${code.status}">${code.status === 'active' ? 'Activo' : 'Usado'}</span></td>
+                    <td>${code.description}</td>
+                    <td>
+                        <button class="action-btn" onclick="deleteOwnerCode('${code.code}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function loadAdminCodes() {
+            const tbody = document.getElementById('adminCodesTable');
+            
+            if (adminCodes.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #64748b;">No hay códigos generados</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = adminCodes.map(code => `
+                <tr>
+                    <td><strong>${code.code}</strong></td>
+                    <td><span class="status-${code.status}">${code.status === 'active' ? 'Activo' : 'Usado'}</span></td>
+                    <td>${code.description}</td>
+                    <td>
+                        <button class="action-btn" onclick="deleteAdminCode('${code.code}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Eliminar códigos
+        function deleteOwnerCode(code) {
+            if (confirm(`¿Estás seguro de que quieres eliminar el código ${code}?`)) {
+                ownerCodes = ownerCodes.filter(c => c.code !== code);
+                saveCodes();
+                loadCodes();
+                updateStats();
+                showNotification(`Código ${code} eliminado`, 'success');
+            }
+        }
+
+        function deleteAdminCode(code) {
+            if (confirm(`¿Estás seguro de que quieres eliminar el código ${code}?`)) {
+                adminCodes = adminCodes.filter(c => c.code !== code);
+                saveCodes();
+                loadCodes();
+                updateStats();
+                showNotification(`Código ${code} eliminado`, 'success');
+            }
+        }
+
+        // Limpiar todos los códigos
+        function clearOwnerCodes() {
+            if (confirm('¿Estás seguro de que quieres eliminar TODOS los códigos de propietarios?')) {
+                ownerCodes = [];
+                saveCodes();
+                loadCodes();
+                updateStats();
+                showNotification('Todos los códigos de propietarios eliminados', 'success');
+            }
+        }
+
+        function clearAdminCodes() {
+            if (confirm('¿Estás seguro de que quieres eliminar TODOS los códigos de administradores?')) {
+                adminCodes = [];
+                saveCodes();
+                loadCodes();
+                updateStats();
+                showNotification('Todos los códigos de administradores eliminados', 'success');
+            }
+        }
+
+        // Actualizar estadísticas
+        function updateStats() {
+            const totalOwner = ownerCodes.length;
+            const totalAdmin = adminCodes.length;
+            const used = ownerCodes.filter(c => c.status === 'used').length + adminCodes.filter(c => c.status === 'used').length;
+            const active = ownerCodes.filter(c => c.status === 'active').length + adminCodes.filter(c => c.status === 'active').length;
+            
+            document.getElementById('totalOwnerCodes').textContent = totalOwner;
+            document.getElementById('totalAdminCodes').textContent = totalAdmin;
+            document.getElementById('usedCodes').textContent = used;
+            document.getElementById('activeCodes').textContent = active;
+        }
+
+        // Sistema de notificaciones
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => notification.remove(), 400);
+            }, 4000);
+        }
+
+        // API para validar códigos (usada por app2.js)
+        window.BlackMesaCodeManager = {
+            validateOwnerCode: function(code) {
+                const codeObj = ownerCodes.find(c => c.code === code && c.status === 'active');
+                return !!codeObj;
+            },
+            
+            validateAdminCode: function(code) {
+                const codeObj = adminCodes.find(c => c.code === code && c.status === 'active');
+                return !!codeObj;
+            },
+            
+            useOwnerCode: function(code) {
+                const codeObj = ownerCodes.find(c => c.code === code && c.status === 'active');
+                if (codeObj) {
+                    codeObj.status = 'used';
+                    codeObj.used = new Date().toISOString();
+                    saveCodes();
+                    return true;
+                }
+                return false;
+            },
+            
+            useAdminCode: function(code) {
+                const codeObj = adminCodes.find(c => c.code === code && c.status === 'active');
+                if (codeObj) {
+                    codeObj.status = 'used';
+                    codeObj.used = new Date().toISOString();
+                    saveCodes();
+                    return true;
+                }
+                return false;
+            }
+        };
+    </script>
+</body>
+</html>

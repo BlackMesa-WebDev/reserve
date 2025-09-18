@@ -4,7 +4,7 @@
 
 CREATE DATABASE blackmesa_directorio;
 USE blackmesa_directorio;
-
+DB_HOST = localhost DB_NAME = blackmesa_directorio DB_USER = BlackMesa DB_PASSWORD = contraseña_segura EMAILJS_SERVICE_ID = service_3j8wzwy EMAILJS_TEMPLATE_ID = plantilla_e2p7kqe EMAILJS_PUBLIC_KEY = wt8oRv0cC4xanrs4P
 -- =============================================
 -- TABLA DE USUARIOS
 -- =============================================
